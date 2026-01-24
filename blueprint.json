@@ -1,0 +1,23 @@
+﻿{
+    "ServerName": "DevOps-Workstation-01",
+    "Version": "1.0",
+    "Config": {
+        "Services": [
+            { "Name": "Spooler", "State": "Stopped" },
+            { "Name": "wuauserv", "State": "Stopped" }
+        ],
+        "Files": [
+            { 
+                "Path": "C:\\OpsMaster\\compliance.txt", 
+                "Content": "This node is managed by OpsMaster. Do not edit manually." 
+            }
+        ],
+        "Registry": [
+            {
+                "Path": "HKCU:\\Software\\OpsMaster",
+                "Name": "LastScan",
+                "Value": "1"
+            }
+        ]
+    }
+}
