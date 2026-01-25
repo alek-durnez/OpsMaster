@@ -1,9 +1,8 @@
-﻿
-# OpsMaster
+﻿# OpsMaster
 
 **OpsMaster** is a lightweight, idempotent Infrastructure-as-Code (IaC) engine built entirely in PowerShell.
 
-It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desired state on a local Windows machine. It functions similarly to tools like **Ansible** or **Puppet**, but without the need for agents or complex master servers.
+It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desired state on a local Windows machine. It functions similarly to tools like **Ansible** or **Puppet**, featuring "ChatOps" integration to alert Discord when drift is detected and fixed.
 
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue?logo=powershell)
 ![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows)
@@ -15,10 +14,9 @@ It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desire
 
 * **Declarative Configuration:** Define your server's state in a simple `JSON` file.
 * **Idempotency:** The script checks current state before making changes. If the system is already compliant, it does nothing.
-* **Service Management:** Ensure critical services are Running or Stopped.
-* **File Integrity:** Enforce the existence and content of specific files.
-* **Registry Enforcement:** Manage Registry keys and values to harden system settings.
-* **Detailed Logging:** Clear console output distinguishing between `[OK]` checks and `[FIXED]` actions.
+* **Self-Healing:** Automatically restarts services, corrects files, and enforces Registry keys.
+* **ChatOps Integration:** Sends real-time alerts to a Discord Webhook when remediation occurs.
+* **Secure Design:** API keys and Webhooks are externalized to prevent credential leakage.
 
 ---
 
@@ -31,18 +29,27 @@ It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desire
     ```
 
 2.  **Verify Permissions:**
-    You must run this tool as **Administrator** to manage Services and Registry keys.
-    
+    Run as **Administrator** to manage Services and Registry keys.
     Ensure script execution is allowed:
     ```powershell
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
     ```
 
+3.  **Setup Secrets:**
+    Create a file named `secrets.json` in the root folder.
+    Paste your Discord Webhook URL inside:
+    ```json
+    {
+        "DiscordWebhook": "[https://discord.com/api/webhooks/YOUR_KEY_HERE](https://discord.com/api/webhooks/YOUR_KEY_HERE)"
+    }
+    ```
+    *Note: This file is git ignored to protect credentials.*
+
 ---
 
-## Configuration
+## Blueprint Configuration
 
-The brain of OpsMaster is the `blueprint.json` file. 
+Here we tell OpsMaster what it needs to check in thr `blueprint.json` file. 
 
 ### Example Blueprint
 ```json
@@ -74,36 +81,7 @@ The brain of OpsMaster is the `blueprint.json` file.
 
 ## Usage
 
-Run the engine from a PowerShell terminal with Administrator privileges:
+Run the engine from a PowerShell terminal:
 
 ```powershell
 .\OpsMaster.ps1
-
-```
-
-### What happens next?
-
-1. **Read:** The engine parses `blueprint.json`.
-2. **Assess:** It checks the current status of every defined resource.
-3. **Remediate:** * If a resource matches the blueprint, it logs `[OK]`.
-* If a resource is different (Drift), it automatically corrects it and logs `[FIXED]`.
-
-
-
----
-
-## Testing the "Self-Healing"
-
-To see the engine in action:
-
-1. **Break the state:** Manually start the `Print Spooler` service or delete the `compliance.txt` file.
-2. **Run OpsMaster:** Execute `.\OpsMaster.ps1`.
-3. **Verify:** Watch the console as OpsMaster detects the "Drift" and reverts your changes automatically.
-
----
-
-## Roadmap
-
-* Discord/Slack Webhook Integration (Notifications)
-* Software Installation (Chocolately/Winget support)
-* User & Group Management
