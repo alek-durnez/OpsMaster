@@ -1,6 +1,6 @@
 ﻿# OpsMaster
 
-**OpsMaster** is a lightweight, idempotent Infrastructure-as-Code (IaC) engine built entirely in PowerShell.
+**OpsMaster** is a lightweight, idempotent Infrastructure-as-Code (IaC) engine built in PowerShell.
 
 It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desired state on a local Windows machine. It functions similarly to tools like **Ansible** or **Puppet**, featuring "ChatOps" integration to alert Discord when drift is detected and fixed.
 
