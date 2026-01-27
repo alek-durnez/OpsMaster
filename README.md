@@ -24,7 +24,7 @@ It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desire
 
 1.  **Clone the Repository:**
     ```powershell
-    git clone [https://github.com/YOUR_USERNAME/OpsMaster.git](https://github.com/YOUR_USERNAME/OpsMaster.git)
+    git clone [https://github.com/alek-durnez/OpsMaster.git](https://github.com/alek-durnez/OpsMaster.git)
     cd OpsMaster
     ```
 
