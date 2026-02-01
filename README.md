@@ -4,16 +4,17 @@
 
 It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desired state on a local Windows machine. It functions similarly to tools like **Ansible** or **Puppet**, featuring "ChatOps" integration to alert Discord when drift is detected and fixed.
 
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue?logo=powershell)
-![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows)
-![License](https://img.shields.io/badge/License-MIT-green)
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue?logo=powershell)](https://github.com/PowerShell/PowerShell)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows)](https://www.microsoft.com/windows)
+[![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
 
 ---
 
 ## Features
 
 * **Declarative Configuration:** Define your server's state in a simple `JSON` file.
-* **Idempotency:** The script checks current state before making changes. If the system is already compliant, it does nothing.
+* **Idempotency:** Checks current state before acting. If the system is compliant, it does nothing.
+* **Software Management:** Checks for installed software and silently installs missing packages (e.g., 7-Zip, Chrome).
 * **Self-Healing:** Automatically restarts services, corrects files, and enforces Registry keys.
 * **ChatOps Integration:** Sends real-time alerts to a Discord Webhook when remediation occurs.
 * **Secure Design:** API keys and Webhooks are externalized to prevent credential leakage.
@@ -43,21 +44,33 @@ It reads a declarative JSON blueprint (`blueprint.json`) and enforces the desire
         "DiscordWebhook": "[https://discord.com/api/webhooks/YOUR_KEY_HERE](https://discord.com/api/webhooks/YOUR_KEY_HERE)"
     }
     ```
-    *Note: This file is git ignored to protect credentials.*
+    *Note: This file is git-ignored to protect credentials.*
 
 ---
 
-## Blueprint Configuration
+## Configuration
 
-Here we tell OpsMaster what it needs to check in thr `blueprint.json` file. 
+OpsMaster relies on three configuration files:
 
-### Example Blueprint
+1.  **`blueprint.json`**: The desired state of the server (What to manage).
+2.  **`settings.json`**: App configuration (Logging paths, feature toggles).
+3.  **`secrets.json`**: Credentials (API Keys).
+
+### Example Blueprint (`blueprint.json`)
 ```json
 {
     "ServerName": "Production-Web-01",
     "Config": {
         "Services": [
             { "Name": "Spooler", "State": "Stopped" }
+        ],
+        "Software": [
+            {
+                "Name": "7-Zip",
+                "CheckPath": "C:\\Program Files\\7-Zip\\7z.exe",
+                "Url": "[https://www.7-zip.org/a/7z2409-x64.exe](https://www.7-zip.org/a/7z2409-x64.exe)",
+                "SilentArgs": "/S"
+            }
         ],
         "Files": [
             { 
@@ -77,11 +90,38 @@ Here we tell OpsMaster what it needs to check in thr `blueprint.json` file.
 
 ```
 
+### Example Settings (`settings.json`)
+
+```json
+{
+    "BlueprintPath": ".\\blueprint.json",
+    "SecretsPath": ".\\secrets.json",
+    "LogPath": "C:\\OpsMaster\\Logs\\OpsMaster.log",
+    "Notifications": {
+        "Enabled": true,
+        "Provider": "Discord"
+    }
+}
+
+```
+
 ---
 
 ## Usage
 
-Run the engine from a PowerShell terminal:
+**Manual Run:**
+Run the engine from a PowerShell terminal with Admin privileges:
 
 ```powershell
 .\OpsMaster.ps1
+
+```
+
+**Automated (Self-Healing Mode):**
+To ensure continuous compliance, schedule the script to run hourly via **Task Scheduler**:
+
+1. Create a new Task running with **Highest Privileges**.
+2. **Action:** `Start a program` -> `powershell.exe`
+3. **Arguments:**
+```text
+-ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Path\To\OpsMaster\OpsMaster.ps1"

@@ -1,0 +1,10 @@
+{
+    "BlueprintPath": ".\\blueprint.json",
+    "SecretsPath": ".\\secrets.json",
+    "LogPath": "C:\\OpsMaster\\Logs\\OpsMaster.log",
+    "RetentionDays": 7,
+    "Notifications": {
+        "Enabled": true,
+        "Provider": "Discord"
+    }
+}
