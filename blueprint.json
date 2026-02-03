@@ -2,21 +2,31 @@
     "ServerName": "DevOps-Workstation-01",
     "Config": {
         "Services": [
-            { "Name": "Spooler", "State": "Stopped" },
-            { "Name": "wuauserv", "State": "Stopped" }
+            { "Name": "Spooler", "State": "Stopped" }
         ],
         "Software": [
             {
                 "Name": "7-Zip",
+                "Provider": "Direct",
                 "CheckPath": "C:\\Program Files\\7-Zip\\7z.exe",
                 "Url": "https://www.7-zip.org/a/7z2409-x64.exe",
                 "SilentArgs": "/S"
+            },
+            {
+                "Name": "Firefox",
+                "Provider": "Chocolatey",
+                "PackageId": "firefox"
+            },
+            {
+                "Name": "Git",
+                "Provider": "Chocolatey",
+                "PackageId": "git"
             }
         ],
         "Files": [
             { 
                 "Path": "C:\\OpsMaster\\compliance.txt", 
-                "Content": "This node is managed by OpsMaster. Do not edit manually." 
+                "Content": "Managed by OpsMaster." 
             }
         ],
         "Registry": [
